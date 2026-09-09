@@ -15,6 +15,7 @@ permissions:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   DOTNET_NOLOGO: true
+  DOTNET_COVERAGE_VERSION: 18.5.2
 jobs:
   build:
     name: Build
