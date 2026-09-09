@@ -51,7 +51,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite: [BVT]
+        suite: [BVT, SlowBVT, Functional]
         os: [ubuntu-latest]
         framework: ["net10.0"]
     steps:
