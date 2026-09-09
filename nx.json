@@ -1,0 +1,46 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "installation": {
+    "version": "23.2.1",
+    "plugins": {
+      "@nx/dotnet": "23.2.1"
+    }
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/dotnet",
+      "exclude": [
+        "samples/**",
+        "docs/**",
+        "templates/**"
+      ],
+      "options": {
+        "test": {
+          "options": {
+            "args": [
+              "--no-build",
+              "--no-restore",
+              "--framework",
+              "net10.0",
+              "--filter-query",
+              "\"/[(Provider=None)&(Suite=BVT)]\""
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/**/*.Tests/**/*",
+      "!{projectRoot}/**/bin/**/*",
+      "!{projectRoot}/**/obj/**/*"
+    ]
+  },
+  "nxCloudUrl": "https://staging.nx.app",
+  "nxCloudId": "6aa1d107caa523e1f04a1348"
+}
