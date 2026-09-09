@@ -1,0 +1,20 @@
+launch-templates:
+  linux-large-dotnet-restored:
+    resource-class: 'docker_linux_amd64/large'
+    image: 'ubuntu22.04-node20.19-v2'
+    init-steps:
+      - name: Checkout
+        uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/checkout/main.yaml'
+      # Installs the .NET SDK pinned in mise.toml
+      - name: Install Mise
+        uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/install-mise/main.yaml'
+      - name: Restore NuGet Package Cache
+        uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/cache/main.yaml'
+        inputs:
+          key: 'Directory.Packages.props|mise.toml'
+          paths: '~/.nuget/packages'
+          base-branch: 'main'
+      - name: Restore Solution
+        script: dotnet restore Orleans.slnx
+      - name: Set up Nx
+        script: ./nx --version
