@@ -7,6 +7,62 @@
 
 [![Discord](https://discordapp.com/api/guilds/333727978460676096/widget.png?style=banner2)](https://aka.ms/orleans-discord)
 
+## Nx on this fork
+
+This fork of [dotnet/orleans](https://github.com/dotnet/orleans) adds Nx with the `@nx/dotnet` plugin and runs CI two ways on every push and pull request, so the two can be compared on the same commit.
+
+| Workflow              | What runs                                                                                |
+| --------------------- | ---------------------------------------------------------------------------------------- |
+| `Nx CI` (`nx-ci.yml`) | `nx affected -t build test`, distributed over 6 Nx Agents, results cached in Nx Cloud    |
+| `.NET CI` (`ci.yml`)  | A trimmed copy of the upstream workflow, reduced to the jobs the Nx workflow also covers |
+
+Nothing under `src`, `test` or `playground` changed. The additions are `nx.json`, the `nx` wrapper scripts and `.nx/`, `mise.toml`, and the two workflow files.
+
+### What the plugin infers
+
+`@nx/dotnet` reads every `csproj` and `fsproj` with MSBuild and creates one Nx project per file: 154 projects, 44 of them with a `test` target because Orleans sets `IsTestProject` in `test/Directory.Build.props`. `samples`, `docs` and `templates` are excluded in `nx.json` because they are not in `Orleans.slnx` and reference published packages rather than the source tree.
+
+Each `build` target runs `dotnet build --no-restore --no-dependencies` in its own project and depends on the `build` of every referenced project, so a solution build becomes 154 tasks with a dependency graph. That graph is what the agents distribute and the cache keys on. The `test` target runs `dotnet test --no-build --framework net10.0` with the filter `/[(Provider=None)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))]`.
+
+```sh
+./nx show projects
+./nx run-many -t build
+./nx test Orleans.Core.Tests
+```
+
+The SDK is pinned in `mise.toml`. `jdx/mise-action` installs it on the GitHub runner and the `install-mise` step does the same on each agent, defined in `.nx/workflows/agents.yaml`.
+
+### The upstream workflow, and what the trimmed copy leaves out
+
+Upstream `.NET CI` runs 58 jobs on every push to `main`. The run measured on 2026-09-09 took 21 minutes of wall clock and 533 job-minutes.
+
+| Jobs                                     | Count | Kept | Why the rest are left out                                                |
+| ---------------------------------------- | ----- | ---- | ------------------------------------------------------------------------ |
+| Build (ubuntu, windows)                  | 2     | 1    | Nx Agents are Linux only                                                 |
+| Test, 3 suites x 2 OS x 2 frameworks     | 12    | 3    | Linux and `net10.0` only; the `net8.0` legs need a second runtime        |
+| Test Code Generator, 2 OS x 2 frameworks | 4     | 1    | Same                                                                     |
+| Provider tests, 17 providers x versions  | 38    | 0    | Each starts a Docker container or emulator; agents have no Docker socket |
+| Whitespace formatting                    | 1     | 0    | `dotnet format` check, not a build or test                               |
+| CI (aggregate)                           | 1     | 1    |                                                                          |
+
+The 38 provider jobs cover Redis, Cassandra (three versions), PostgreSQL, MariaDB/MySQL, SQL Server, SQLite, Azure Storage, Azure Event Hubs, Azure Cosmos DB, Consul, ZooKeeper, DynamoDB, SQS, S3, Kinesis, NATS and Google Cloud, each on `net8.0` and `net10.0`. Only the SQLite job starts no service. Every test in those jobs carries a `Provider` trait, so the `Provider=None` clause in the Nx test filter is what keeps them out.
+
+`Suite` values in the tree are BVT, Functional, SlowBVT, Nightly, Stress and Benchmark. Upstream runs the first three on push; the filter runs the same three.
+
+### Numbers
+
+Both workflows ran cold on the same set of work: Build, Code Generator tests, and the three suites on ubuntu/net10.0.
+
+| Run                     | Wall clock | Work                           | Runners                         |
+| ----------------------- | ---------- | ------------------------------ | ------------------------------- |
+| `Nx CI`, cold           | 15.4 min   | 49 task-minutes over 198 tasks | 6 large agents + 1 orchestrator |
+| `.NET CI` trimmed, cold | 17.8 min   | 56.7 job-minutes over 5 jobs   | 5 GitHub runners                |
+| `Nx CI`, no code change | 0.8 min    | 0 tasks executed               | 1 orchestrator                  |
+
+Each trimmed upstream test job rebuilds the solution before testing, which is most of the difference in job-minutes. The Nx run builds each project once and hands the outputs to dependent tasks through the cache. The longest single Nx task is `Orleans.Runtime.Internal.Tests:test` at 5.8 minutes, so splitting the test target per suite would shorten the critical path further.
+
+Runs: [Nx cold](https://staging.nx.app/runs/oYqRtxbWbY), [.NET CI trimmed](https://github.com/AgentEnder/orleans/actions/runs/34418479508), [Nx no-change](https://staging.nx.app/runs/aEf14mhLSd).
+
 ### Orleans is a cross-platform framework for building robust, scalable distributed applications
 
 Orleans builds on the developer productivity of .NET and brings it to the world of distributed applications, such as cloud services. Orleans scales from a single on-premises server to globally distributed, highly-available applications in the cloud.
