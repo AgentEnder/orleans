@@ -110,5 +110,4 @@
       </PropertyGroup>
     </Otherwise>
   </Choose>
-  <!-- Touched to measure a cold run on 12 agents. -->
 </Project>
