@@ -51,17 +51,27 @@ The 38 provider jobs cover Redis, Cassandra (three versions), PostgreSQL, MariaD
 
 ### Numbers
 
-Both workflows ran cold on the same set of work: Build, Code Generator tests, and the three suites on ubuntu/net10.0.
+Two configurations, each measured cold on the same commit by both workflows.
 
-| Run                     | Wall clock | Work                           | Runners                         |
-| ----------------------- | ---------- | ------------------------------ | ------------------------------- |
-| `Nx CI`, cold           | 15.4 min   | 49 task-minutes over 198 tasks | 6 large agents + 1 orchestrator |
-| `.NET CI` trimmed, cold | 17.8 min   | 56.7 job-minutes over 5 jobs   | 5 GitHub runners                |
-| `Nx CI`, no code change | 0.8 min    | 0 tasks executed               | 1 orchestrator                  |
+**Baseline**, on `main`: Build, Code Generator tests, and the BVT, SlowBVT and Functional suites on ubuntu/net10.0.
 
-Each trimmed upstream test job rebuilds the solution before testing, which is most of the difference in job-minutes. The Nx run builds each project once and hands the outputs to dependent tasks through the cache. The longest single Nx task is `Orleans.Runtime.Internal.Tests:test` at 5.8 minutes, so splitting the test target per suite would shorten the critical path further.
+| Run                     | Tasks or jobs       | Wall clock | Compute          | Link                                                                      |
+| ----------------------- | ------------------- | ---------- | ---------------- | ------------------------------------------------------------------------- |
+| `Nx CI`, cold           | 198 tasks, 6 agents | 15.4 min   | 49 task-minutes  | [Nx Cloud](https://staging.nx.app/runs/oYqRtxbWbY)                        |
+| `.NET CI` trimmed, cold | 5 jobs              | 17.8 min   | 56.7 job-minutes | [Actions](https://github.com/AgentEnder/orleans/actions/runs/34418479508) |
+| `Nx CI`, no code change | 0 tasks executed    | 0.8 min    | 0                | [Nx Cloud](https://staging.nx.app/runs/aEf14mhLSd)                        |
 
-Runs: [Nx cold](https://staging.nx.app/runs/oYqRtxbWbY), [.NET CI trimmed](https://github.com/AgentEnder/orleans/actions/runs/34418479508), [Nx no-change](https://staging.nx.app/runs/aEf14mhLSd).
+**With provider suites**, on the [`provider-services`](https://github.com/AgentEnder/orleans/tree/provider-services) branch ([PR #2](https://github.com/AgentEnder/orleans/pull/2)): the baseline plus the Redis, PostgreSQL, SQLite, Azure Storage and NATS suites. On the Nx side each service is a continuous task that agents start next to the tests that need it; on the upstream side each is a job that starts a Docker container.
+
+| Run                     | Tasks or jobs       | Wall clock | Compute           | Link                                                                      |
+| ----------------------- | ------------------- | ---------- | ----------------- | ------------------------------------------------------------------------- |
+| `Nx CI`, cold           | 207 tasks, 6 agents | 28.9 min   | 65.9 task-minutes | [Nx Cloud](https://staging.nx.app/runs/JDxpN6IzZR)                        |
+| `.NET CI` trimmed, cold | 10 jobs             | 18.2 min   | 108.3 job-minutes | [Actions](https://github.com/AgentEnder/orleans/actions/runs/34497972050) |
+| `Nx CI`, no code change | 2 tasks executed    | 7.7 min    | 205 cache hits    | [Nx Cloud](https://staging.nx.app/runs/Sb7cGEKsYh)                        |
+
+The cold provider run predates the postgres fixes, so its `test-postgres` task failed after a two-minute wait; the later run is green. Its wall clock is well above the six-agent ideal of about eleven minutes because the agents spent their first minutes installing the services and the Azure Storage suites add two more five-minute tasks to the tail.
+
+Each trimmed upstream test job rebuilds the solution before testing, which is most of the difference in compute. The Nx run builds each project once and hands the outputs to dependent tasks through the cache. The longest single Nx task is `Orleans.Runtime.Internal.Tests:test` at 5.8 minutes, so splitting the test target per suite would shorten the critical path further.
 
 ### Orleans is a cross-platform framework for building robust, scalable distributed applications
 
