@@ -1,5 +1,10 @@
 # Services the provider test targets start on CI agents. Activated with MISE_ENV=ci.
+[settings]
+# redis-server and postgresql come from conda-forge, which mise gates behind this flag
+experimental = true
+
 [tools]
+node = "22"
 "conda:redis-server" = "8"
 "conda:postgresql" = "18"
 "npm:azurite" = "3"
