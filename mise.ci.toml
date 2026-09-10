@@ -1,0 +1,6 @@
+# Services the provider test targets start on CI agents. Activated with MISE_ENV=ci.
+[tools]
+"conda:redis-server" = "8"
+"conda:postgresql" = "18"
+"npm:azurite" = "3"
+"github:nats-io/nats-server" = "2"

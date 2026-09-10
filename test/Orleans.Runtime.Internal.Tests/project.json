@@ -1,0 +1,7 @@
+{
+  "name": "Orleans.Runtime.Internal.Tests",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "targets": {
+    "test-azurestorage": {}
+  }
+}

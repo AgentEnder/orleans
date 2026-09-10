@@ -1,0 +1,7 @@
+{
+  "name": "Orleans.Transactions.Azure.Test",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "targets": {
+    "test-azurestorage": {}
+  }
+}

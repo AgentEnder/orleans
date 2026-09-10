@@ -1,0 +1,15 @@
+{
+  "name": "svc-azurite",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "cache": false,
+      "options": {
+        "command": "npx --yes azurite@3 --silent --skipApiVersionCheck --location /tmp/orleans-azurite --blobPort 10000 --queuePort 10001 --tablePort 10002"
+      }
+    }
+  }
+}
