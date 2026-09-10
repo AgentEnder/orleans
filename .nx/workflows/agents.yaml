@@ -19,6 +19,9 @@ launch-templates:
       # Installs the .NET SDK pinned in mise.toml plus the mise.ci.toml services
       - name: Install Mise
         uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/install-mise/main.yaml'
+        inputs:
+          # the step's default (v2025.12.2) installs conda packages without their dependencies
+          mise-version: 'v2026.9.4'
       - name: Restore Solution
         script: dotnet restore Orleans.slnx
       - name: Set up Nx
