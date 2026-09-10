@@ -22,5 +22,5 @@
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
-  <!-- Touched again to measure an affected CI run from a mid-graph project. -->
+  <!-- Touched a third time to measure an affected CI run from a mid-graph project. -->
 </Project>
