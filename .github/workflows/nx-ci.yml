@@ -35,14 +35,18 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
 
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected.
-      - run: ./nx affected -t build test
-
-      # Provider suites run as configurations of the inferred test target, scoped by project tag
-      - run: ./nx run-many -t test -c redis -p tag:provider:redis
-      - run: ./nx run-many -t test -c postgres -p tag:provider:postgres
-      - run: ./nx run-many -t test -c sqlite -p tag:provider:sqlite
-      - run: ./nx run-many -t test -c azurestorage -p tag:provider:azurestorage
-      - run: ./nx run-many -t test -c nats -p tag:provider:nats
+      # Provider suites run as configurations of the inferred test target, scoped by project tag.
+      # All commands run in parallel against the same pipeline execution so the agents stay busy.
+      - run: |
+          ./nx affected -t build test &
+          ./nx run-many -t test -c redis -p tag:provider:redis &
+          ./nx run-many -t test -c postgres -p tag:provider:postgres &
+          ./nx run-many -t test -c sqlite -p tag:provider:sqlite &
+          ./nx run-many -t test -c azurestorage -p tag:provider:azurestorage &
+          ./nx run-many -t test -c nats -p tag:provider:nats &
+          status=0
+          for job in $(jobs -p); do wait "$job" || status=1; done
+          exit $status
 
       # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
       - run: ./nx fix-ci
