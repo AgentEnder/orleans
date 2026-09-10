@@ -16,6 +16,10 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   DOTNET_NOLOGO: true
   DOTNET_COVERAGE_VERSION: 18.5.2
+  AZURITE_IMAGE: mcr.microsoft.com/azure-storage/azurite:3.35.0@sha256:647c63a91102a9d8e8000aab803436e1fc85fbb285e7ce830a82ee5d6661cf37
+  NATS_IMAGE: nats:latest
+  POSTGRES_IMAGE: postgres
+  REDIS_IMAGE: redis
 jobs:
   build:
     name: Build
@@ -85,6 +89,185 @@ jobs:
         artifact-name: test_output_${{ github.job }}_${{ matrix.os }}_${{ matrix.framework }}
         filter-query: /[(Provider=None)&(Area=CodeGen)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))]
         framework: ${{ matrix.framework }}
+  test-redis:
+    name: Redis provider tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: ["net10.0"]
+    steps:
+    - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+    - name: Start Redis
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        bash .github/scripts/docker-pull-with-retry.sh "$REDIS_IMAGE"
+
+        docker run -d --pull=never --name redis \
+          -p 6379:6379 \
+          --health-cmd "redis-cli ping" \
+          --health-interval 10s \
+          --health-timeout 5s \
+          --health-retries 5 \
+          "$REDIS_IMAGE"
+
+        bash .github/scripts/docker-wait-for-health.sh redis
+    - name: Test
+      uses: ./.github/actions/run-tests
+      with:
+        artifact-name: test_output_${{ github.job }}_${{ matrix.framework }}
+        framework: ${{ matrix.framework }}
+        provider: Redis
+      env:
+        ORLEANSREDISCONNECTIONSTRING: "localhost:6379,ssl=False,abortConnect=False"
+    - name: Clean up Redis
+      if: always()
+      run: docker rm -f redis || true
+  test-postgres:
+    name: PostgreSQL provider tests
+    runs-on: ubuntu-latest
+    env:
+# [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Not a secret")]
+      POSTGRES_PASSWORD: postgres
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: ["net10.0"]
+    steps:
+    - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+    - name: Start PostgreSQL
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        bash .github/scripts/docker-pull-with-retry.sh "$POSTGRES_IMAGE"
+
+        docker run -d --pull=never --name postgres \
+          -p 5432:5432 \
+          -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+          --health-cmd "pg_isready -U postgres" \
+          --health-interval 10s \
+          --health-timeout 5s \
+          --health-retries 5 \
+          "$POSTGRES_IMAGE" \
+          -c max_connections=200
+
+        bash .github/scripts/docker-wait-for-health.sh postgres
+    - name: Test
+      uses: ./.github/actions/run-tests
+      with:
+        artifact-name: test_output_${{ github.job }}_${{ matrix.framework }}
+        framework: ${{ matrix.framework }}
+        provider: PostgreSql
+      env:
+# [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="False positive")]
+        ORLEANSPOSTGRESCONNECTIONSTRING: "Server=127.0.0.1;Port=5432;Pooling=false;User Id=postgres;Password=postgres;SSL Mode=Disable"
+    - name: Clean up PostgreSQL
+      if: always()
+      run: docker rm -f postgres || true
+  test-sqlite:
+    name: SQLite provider tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: ["net10.0"]
+    steps:
+    - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+    - name: Test
+      uses: ./.github/actions/run-tests
+      with:
+        artifact-name: test_output_${{ github.job }}_${{ matrix.framework }}
+        framework: ${{ matrix.framework }}
+        provider: Sqlite
+  test-azure-storage:
+    name: Azure Storage provider tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: ["net10.0"]
+    steps:
+    - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+    - name: Start Azurite
+      run: |
+        set -euo pipefail
+
+        bash .github/scripts/docker-pull-with-retry.sh "$AZURITE_IMAGE"
+
+        docker run -d --pull=never --name azurite \
+          -p 10000:10000 \
+          -p 10001:10001 \
+          -p 10002:10002 \
+          "$AZURITE_IMAGE" \
+          azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck
+    - name: Wait for Azurite
+      run: |
+        echo "Waiting for Azurite to be ready..."
+        timeout 60 bash -c 'until nc -z localhost 10000 && nc -z localhost 10001 && nc -z localhost 10002; do sleep 1; done'
+        echo "Azurite is ready"
+    - name: Test
+      uses: ./.github/actions/run-tests
+      with:
+        artifact-name: test_output_${{ github.job }}_${{ matrix.framework }}
+        framework: ${{ matrix.framework }}
+        provider: AzureStorage
+      env:
+# [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Not a secret")]
+# [SuppressMessage("Microsoft.Security", "CSCAN0090:ConfigFile", Justification="Not a secret")]
+# [SuppressMessage("Microsoft.Security", "CSCAN0220:DefaultPasswordContexts", Justification="Not a secret")]
+        ORLEANSDATACONNECTIONSTRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+    - name: Clean up Azurite
+      if: always()
+      run: docker rm -f azurite || true
+  test-nats:
+    name: NATS stream provider tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: ["net10.0"]
+#    services:
+#      nats:
+#        image: nats:latest
+#        ports:
+#        - 4222:4222
+#        - 8222:8222
+#        env:
+#          HTTP_PORT: 8222
+    steps:
+    - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+    - name: Start NATS
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        bash .github/scripts/docker-pull-with-retry.sh "$NATS_IMAGE"
+
+        docker run -d --pull=never --name nats \
+          -p 4222:4222 \
+          -p 8222:8222 \
+          "$NATS_IMAGE" \
+          --js --http_port=8222
+    - name: Wait for NATS
+      run: |
+        echo "Waiting for NATS to be ready..."
+        if ! timeout 60 bash -c 'until docker logs nats 2>&1 | grep -q "Server is ready"; do sleep 1; done'; then
+          docker logs nats
+          exit 1
+        fi
+        echo "NATS is ready"
+    - name: Test
+      uses: ./.github/actions/run-tests
+      with:
+        artifact-name: test_output_${{ github.job }}_${{ matrix.framework }}
+        framework: ${{ matrix.framework }}
+        provider: NATS
+    - name: Clean up container
+      if: always()
+      run: docker rm -f nats || true
   ci:
     name: CI
     if: always()
@@ -92,6 +275,11 @@ jobs:
       - build
       - test
       - test-codegenerator
+      - test-redis
+      - test-postgres
+      - test-sqlite
+      - test-azure-storage
+      - test-nats
     runs-on: ubuntu-latest
     steps:
     - name: Verify all CI jobs succeeded
