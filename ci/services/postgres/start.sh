@@ -9,5 +9,5 @@ export LD_LIBRARY_PATH="$prefix/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 data=${PGDATA_DIR:-/tmp/orleans-postgres}
 rm -rf "$data"
-initdb --username=postgres --auth=trust --pgdata="$data" >/dev/null
+initdb --username=postgres --auth=trust --encoding=UTF8 --locale=C --pgdata="$data" >/dev/null
 exec postgres -D "$data" -p 5432 -c listen_addresses=127.0.0.1
