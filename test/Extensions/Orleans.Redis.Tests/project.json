@@ -1,7 +1,18 @@
 {
   "name": "Orleans.Redis.Tests",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "tags": [
+    "provider:redis"
+  ],
   "targets": {
-    "test-redis": {}
+    "test": {
+      "dependsOn": [
+        "build",
+        {
+          "projects": "svc-redis",
+          "target": "serve"
+        }
+      ]
+    }
   }
 }

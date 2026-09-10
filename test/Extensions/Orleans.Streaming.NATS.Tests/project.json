@@ -1,7 +1,18 @@
 {
   "name": "Orleans.Streaming.NATS.Tests",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "tags": [
+    "provider:nats"
+  ],
   "targets": {
-    "test-nats": {}
+    "test": {
+      "dependsOn": [
+        "build",
+        {
+          "projects": "svc-nats",
+          "target": "serve"
+        }
+      ]
+    }
   }
 }

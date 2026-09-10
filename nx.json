@@ -25,6 +25,71 @@
               "--filter-query",
               "\"/[(Provider=None)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))]\""
             ]
+          },
+          "configurations": {
+            "redis": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:6379 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=Redis)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
+              ],
+              "env": {
+                "ORLEANSREDISCONNECTIONSTRING": "localhost:6379,ssl=False,abortConnect=False"
+              }
+            },
+            "postgres": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:5432 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=PostgreSql)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
+              ],
+              "env": {
+                "ORLEANSPOSTGRESCONNECTIONSTRING": "Server=127.0.0.1;Port=5432;Pooling=false;User Id=postgres;Password=postgres;SSL Mode=Disable"
+              }
+            },
+            "sqlite": {
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=Sqlite)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "azurestorage": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=AzureStorage)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
+              ],
+              "env": {
+                "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+              }
+            },
+            "nats": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:4222 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=NATS)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            }
           }
         }
       }
@@ -43,181 +108,5 @@
     ]
   },
   "nxCloudUrl": "https://staging.nx.app",
-  "nxCloudId": "6aa1d16cabcb6bfcf6298b42",
-  "targetDefaults": {
-    "test-redis": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "dependsOn": [
-        "build",
-        {
-          "projects": "svc-redis",
-          "target": "serve"
-        }
-      ],
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/.editorconfig",
-        "{workspaceRoot}/ci/services/wait-for.sh",
-        {
-          "workingDirectory": "absolute"
-        },
-        {
-          "dependentTasksOutputFiles": "**/*"
-        }
-      ],
-      "outputs": [
-        "{projectRoot}/TestResults"
-      ],
-      "options": {
-        "cwd": "{projectRoot}",
-        "parallel": false,
-        "commands": [
-          "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:6379",
-          "dotnet test --no-build --no-restore --framework net10.0 --filter-query \"/[(Provider=Redis)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
-        ],
-        "env": {
-          "ORLEANSREDISCONNECTIONSTRING": "localhost:6379,ssl=False,abortConnect=False"
-        }
-      }
-    },
-    "test-postgres": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "dependsOn": [
-        "build",
-        {
-          "projects": "svc-postgres",
-          "target": "serve"
-        }
-      ],
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/.editorconfig",
-        "{workspaceRoot}/ci/services/wait-for.sh",
-        {
-          "workingDirectory": "absolute"
-        },
-        {
-          "dependentTasksOutputFiles": "**/*"
-        }
-      ],
-      "outputs": [
-        "{projectRoot}/TestResults"
-      ],
-      "options": {
-        "cwd": "{projectRoot}",
-        "parallel": false,
-        "commands": [
-          "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:5432",
-          "dotnet test --no-build --no-restore --framework net10.0 --filter-query \"/[(Provider=PostgreSql)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
-        ],
-        "env": {
-          "ORLEANSPOSTGRESCONNECTIONSTRING": "Server=127.0.0.1;Port=5432;Pooling=false;User Id=postgres;Password=postgres;SSL Mode=Disable"
-        }
-      }
-    },
-    "test-sqlite": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "dependsOn": [
-        "build"
-      ],
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/.editorconfig",
-        "{workspaceRoot}/ci/services/wait-for.sh",
-        {
-          "workingDirectory": "absolute"
-        },
-        {
-          "dependentTasksOutputFiles": "**/*"
-        }
-      ],
-      "outputs": [
-        "{projectRoot}/TestResults"
-      ],
-      "options": {
-        "cwd": "{projectRoot}",
-        "parallel": false,
-        "commands": [
-          "dotnet test --no-build --no-restore --framework net10.0 --filter-query \"/[(Provider=Sqlite)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
-        ]
-      }
-    },
-    "test-azurestorage": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "dependsOn": [
-        "build",
-        {
-          "projects": "svc-azurite",
-          "target": "serve"
-        }
-      ],
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/.editorconfig",
-        "{workspaceRoot}/ci/services/wait-for.sh",
-        {
-          "workingDirectory": "absolute"
-        },
-        {
-          "dependentTasksOutputFiles": "**/*"
-        }
-      ],
-      "outputs": [
-        "{projectRoot}/TestResults"
-      ],
-      "options": {
-        "cwd": "{projectRoot}",
-        "parallel": false,
-        "commands": [
-          "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002",
-          "dotnet test --no-build --no-restore --framework net10.0 --filter-query \"/[(Provider=AzureStorage)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
-        ],
-        "env": {
-          "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
-        }
-      }
-    },
-    "test-nats": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "dependsOn": [
-        "build",
-        {
-          "projects": "svc-nats",
-          "target": "serve"
-        }
-      ],
-      "inputs": [
-        "default",
-        "^production",
-        "{workspaceRoot}/.editorconfig",
-        "{workspaceRoot}/ci/services/wait-for.sh",
-        {
-          "workingDirectory": "absolute"
-        },
-        {
-          "dependentTasksOutputFiles": "**/*"
-        }
-      ],
-      "outputs": [
-        "{projectRoot}/TestResults"
-      ],
-      "options": {
-        "cwd": "{projectRoot}",
-        "parallel": false,
-        "commands": [
-          "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:4222",
-          "dotnet test --no-build --no-restore --framework net10.0 --filter-query \"/[(Provider=NATS)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
-        ]
-      }
-    }
-  }
+  "nxCloudId": "6aa1d16cabcb6bfcf6298b42"
 }

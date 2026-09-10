@@ -1,7 +1,18 @@
 {
   "name": "Orleans.Azure.Tests",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "tags": [
+    "provider:azurestorage"
+  ],
   "targets": {
-    "test-azurestorage": {}
+    "test": {
+      "dependsOn": [
+        "build",
+        {
+          "projects": "svc-azurite",
+          "target": "serve"
+        }
+      ]
+    }
   }
 }

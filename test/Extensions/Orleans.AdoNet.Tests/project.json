@@ -1,8 +1,19 @@
 {
   "name": "Orleans.AdoNet.Tests",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "tags": [
+    "provider:postgres",
+    "provider:sqlite"
+  ],
   "targets": {
-    "test-postgres": {},
-    "test-sqlite": {}
+    "test": {
+      "dependsOn": [
+        "build",
+        {
+          "projects": "svc-postgres",
+          "target": "serve"
+        }
+      ]
+    }
   }
 }

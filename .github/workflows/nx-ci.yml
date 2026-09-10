@@ -27,7 +27,7 @@ jobs:
       # This enables task distribution via Nx Cloud
       # Run this command as early as possible, before dependencies are installed
       # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      - run: ./nx start-ci-run --distribute-on=".nx/workflows/distribution-config.yaml" --stop-agents-after="test,test-redis,test-postgres,test-sqlite,test-azurestorage,test-nats"
+      - run: ./nx start-ci-run --distribute-on=".nx/workflows/distribution-config.yaml" --stop-agents-after="test,test:redis,test:postgres,test:sqlite,test:azurestorage,test:nats"
 
       # Installs the .NET SDK pinned in mise.toml
       - uses: jdx/mise-action@v2
@@ -35,7 +35,14 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
 
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected.
-      - run: ./nx affected -t build test test-redis test-postgres test-sqlite test-azurestorage test-nats
+      - run: ./nx affected -t build test
+
+      # Provider suites run as configurations of the inferred test target, scoped by project tag
+      - run: ./nx run-many -t test -c redis -p tag:provider:redis
+      - run: ./nx run-many -t test -c postgres -p tag:provider:postgres
+      - run: ./nx run-many -t test -c sqlite -p tag:provider:sqlite
+      - run: ./nx run-many -t test -c azurestorage -p tag:provider:azurestorage
+      - run: ./nx run-many -t test -c nats -p tag:provider:nats
 
       # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
       - run: ./nx fix-ci
