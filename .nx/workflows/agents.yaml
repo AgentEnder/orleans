@@ -11,7 +11,7 @@ launch-templates:
       - name: Restore NuGet and Mise Caches
         uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/cache/main.yaml'
         inputs:
-          key: 'Directory.Packages.props|mise.toml|mise.ci.toml'
+          key: 'Directory.Packages.props|mise.toml|mise.ci.toml|.nx/workflows/agents.yaml'
           paths: |
             ~/.nuget/packages
             ~/.local/share/mise/installs
