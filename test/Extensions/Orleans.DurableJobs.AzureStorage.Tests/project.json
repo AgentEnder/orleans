@@ -9,10 +9,18 @@
       "dependsOn": [
         "build",
         {
-          "projects": "svc-azurite",
+          "projects": "svc-azurite-durablejobs-azurestorage",
           "target": "serve"
         }
-      ]
+      ],
+      "configurations": {
+        "azurestorage": {
+          "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10020 127.0.0.1:10021 127.0.0.1:10022 && dotnet test",
+          "env": {
+            "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10020/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10021/devstoreaccount1;TableEndpoint=http://127.0.0.1:10022/devstoreaccount1;"
+          }
+        }
+      }
     }
   }
 }

@@ -1,0 +1,15 @@
+{
+  "name": "svc-azurite-transactions-azure",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "cache": false,
+      "options": {
+        "command": "npx --yes azurite@3 --silent --skipApiVersionCheck --location /tmp/orleans-svc-azurite-transactions-azure --blobPort 10010 --queuePort 10011 --tablePort 10012"
+      }
+    }
+  }
+}

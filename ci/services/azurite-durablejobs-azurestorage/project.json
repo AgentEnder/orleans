@@ -1,0 +1,15 @@
+{
+  "name": "svc-azurite-durablejobs-azurestorage",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "cache": false,
+      "options": {
+        "command": "npx --yes azurite@3 --silent --skipApiVersionCheck --location /tmp/orleans-svc-azurite-durablejobs-azurestorage --blobPort 10020 --queuePort 10021 --tablePort 10022"
+      }
+    }
+  }
+}
