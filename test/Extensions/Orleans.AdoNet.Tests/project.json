@@ -5,5 +5,15 @@
     "provider:postgres",
     "provider:sqlite"
   ],
-  "targets": {}
+  "targets": {
+    "test": {
+      "dependsOn": [
+        "build",
+        {
+          "projects": "svc-postgres",
+          "target": "serve"
+        }
+      ]
+    }
+  }
 }

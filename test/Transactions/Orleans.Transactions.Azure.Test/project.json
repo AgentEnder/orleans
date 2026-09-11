@@ -8,10 +8,6 @@
     "test": {
       "configurations": {
         "azurestorage": {
-          "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh azurite 10010 10011 10012 -- dotnet test",
-          "env": {
-            "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10010/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10011/devstoreaccount1;TableEndpoint=http://127.0.0.1:10012/devstoreaccount1;"
-          },
           "args": [
             "--no-build",
             "--no-restore",
@@ -21,17 +17,7 @@
             "\"/[(Provider=AzureStorage)&(Suite=SlowBVT)&(Category!=Performance)&(Category!=Stress)]\""
           ]
         },
-        "azurestorage-bvt": {
-          "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh azurite 10010 10011 10012 -- dotnet test",
-          "env": {
-            "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10010/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10011/devstoreaccount1;TableEndpoint=http://127.0.0.1:10012/devstoreaccount1;"
-          }
-        },
         "azurestorage-functional": {
-          "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh azurite 10010 10011 10012 -- dotnet test",
-          "env": {
-            "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10010/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10011/devstoreaccount1;TableEndpoint=http://127.0.0.1:10012/devstoreaccount1;"
-          },
           "args": [
             "--no-build",
             "--no-restore",
@@ -42,10 +28,6 @@
           ]
         },
         "azurestorage-functional-1": {
-          "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh azurite 10010 10011 10012 -- dotnet test",
-          "env": {
-            "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10010/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10011/devstoreaccount1;TableEndpoint=http://127.0.0.1:10012/devstoreaccount1;"
-          },
           "args": [
             "--no-build",
             "--no-restore",
@@ -56,10 +38,6 @@
           ]
         },
         "azurestorage-functional-2": {
-          "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh azurite 10010 10011 10012 -- dotnet test",
-          "env": {
-            "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10010/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10011/devstoreaccount1;TableEndpoint=http://127.0.0.1:10012/devstoreaccount1;"
-          },
           "args": [
             "--no-build",
             "--no-restore",
@@ -69,7 +47,14 @@
             "\"//Orleans.Transactions.Azure.Tests*//[(Provider=AzureStorage)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
           ]
         }
-      }
+      },
+      "dependsOn": [
+        "build",
+        {
+          "projects": "svc-azurite",
+          "target": "serve"
+        }
+      ]
     }
   }
 }

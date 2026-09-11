@@ -1,0 +1,15 @@
+{
+  "name": "svc-redis",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "cache": false,
+      "options": {
+        "command": "redis-server --port 6379 --bind 127.0.0.1 --save '' --appendonly no"
+      }
+    }
+  }
+}
