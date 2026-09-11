@@ -1,2 +1,2 @@
 distribute-on:
-  default: 12 linux-large-dotnet-restored
+  default: 8 linux-large-dotnet-restored
