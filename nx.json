@@ -188,9 +188,6 @@
             "{workspaceRoot}/**/Directory.Packages.props",
             {
               "workingDirectory": "absolute"
-            },
-            {
-              "dependentTasksOutputFiles": "**/bin/**/*"
             }
           ]
         }
