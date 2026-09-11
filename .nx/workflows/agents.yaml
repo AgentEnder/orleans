@@ -5,6 +5,7 @@ launch-templates:
     env:
       # Also installs the services in mise.ci.toml that the provider test targets start
       MISE_ENV: ci
+      NX_CLOUD_CONTINUOUS_ASSIGNMENT: 'true'
     init-steps:
       - name: Checkout
         uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/checkout/main.yaml'
