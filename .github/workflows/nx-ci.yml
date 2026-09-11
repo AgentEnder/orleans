@@ -45,7 +45,12 @@ jobs:
           ./nx run-many -t test -c redis -p tag:provider:redis &
           ./nx run-many -t test -c postgres -p tag:provider:postgres &
           ./nx run-many -t test -c sqlite -p tag:provider:sqlite &
-          ./nx run-many -t test -c azurestorage -p tag:provider:azurestorage &
+          # One run per Azure Storage project: tasks with a continuous dependency are pinned to one agent per run
+          ./nx run Orleans.Azure.Tests:test:azurestorage &
+          ./nx run Orleans.Transactions.Azure.Test:test:azurestorage &
+          ./nx run Orleans.DurableJobs.AzureStorage.Tests:test:azurestorage &
+          ./nx run Orleans.Journaling.Tests:test:azurestorage &
+          ./nx run Orleans.Runtime.Internal.Tests:test:azurestorage &
           ./nx run-many -t test -c nats -p tag:provider:nats &
           status=0
           for job in $(jobs -p); do wait "$job" || status=1; done
