@@ -89,8 +89,113 @@
                 "--filter-query",
                 "\"/[(Provider=NATS)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
               ]
+            },
+            "bvt": {
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=None)&(Suite=BVT)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "azurestorage-bvt": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=AzureStorage)&(Suite=BVT)&(Category!=Performance)&(Category!=Stress)]\""
+              ],
+              "env": {
+                "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+              }
+            },
+            "slowbvt": {
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=None)&(Suite=SlowBVT)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "azurestorage-slowbvt": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=AzureStorage)&(Suite=SlowBVT)&(Category!=Performance)&(Category!=Stress)]\""
+              ],
+              "env": {
+                "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+              }
+            },
+            "functional": {
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=None)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "azurestorage-functional": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=AzureStorage)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+              ],
+              "env": {
+                "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+              }
             }
-          }
+          },
+          "inputs": [
+            "default",
+            "^production",
+            "{workspaceRoot}/.editorconfig",
+            "{workspaceRoot}/global.json",
+            "{workspaceRoot}/**/Directory.Build.props",
+            "{workspaceRoot}/**/Directory.Build.targets",
+            "{workspaceRoot}/**/Directory.Packages.props",
+            {
+              "workingDirectory": "absolute"
+            },
+            {
+              "dependentTasksOutputFiles": "**/bin/**/*"
+            },
+            "{workspaceRoot}/ci/services/wait-for.sh"
+          ]
+        },
+        "build": {
+          "inputs": [
+            "production",
+            "^production",
+            "{workspaceRoot}/.editorconfig",
+            "{workspaceRoot}/global.json",
+            "{workspaceRoot}/**/Directory.Build.props",
+            "{workspaceRoot}/**/Directory.Build.targets",
+            "{workspaceRoot}/**/Directory.Packages.props",
+            {
+              "workingDirectory": "absolute"
+            },
+            {
+              "dependentTasksOutputFiles": "**/bin/**/*"
+            }
+          ]
         }
       }
     }

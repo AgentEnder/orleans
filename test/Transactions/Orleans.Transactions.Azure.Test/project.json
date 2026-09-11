@@ -19,6 +19,24 @@
           "env": {
             "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10010/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10011/devstoreaccount1;TableEndpoint=http://127.0.0.1:10012/devstoreaccount1;"
           }
+        },
+        "azurestorage-bvt": {
+          "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10010 127.0.0.1:10011 127.0.0.1:10012 && dotnet test",
+          "env": {
+            "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10010/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10011/devstoreaccount1;TableEndpoint=http://127.0.0.1:10012/devstoreaccount1;"
+          }
+        },
+        "azurestorage-slowbvt": {
+          "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10010 127.0.0.1:10011 127.0.0.1:10012 && dotnet test",
+          "env": {
+            "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10010/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10011/devstoreaccount1;TableEndpoint=http://127.0.0.1:10012/devstoreaccount1;"
+          }
+        },
+        "azurestorage-functional": {
+          "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10010 127.0.0.1:10011 127.0.0.1:10012 && dotnet test",
+          "env": {
+            "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10010/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10011/devstoreaccount1;TableEndpoint=http://127.0.0.1:10012/devstoreaccount1;"
+          }
         }
       }
     }
