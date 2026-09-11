@@ -4,15 +4,5 @@
   "tags": [
     "provider:nats"
   ],
-  "targets": {
-    "test": {
-      "dependsOn": [
-        "build",
-        {
-          "projects": "svc-nats",
-          "target": "serve"
-        }
-      ]
-    }
-  }
+  "targets": {}
 }

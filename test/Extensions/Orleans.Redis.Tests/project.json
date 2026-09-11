@@ -4,15 +4,5 @@
   "tags": [
     "provider:redis"
   ],
-  "targets": {
-    "test": {
-      "dependsOn": [
-        "build",
-        {
-          "projects": "svc-redis",
-          "target": "serve"
-        }
-      ]
-    }
-  }
+  "targets": {}
 }

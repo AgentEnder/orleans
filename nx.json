@@ -28,7 +28,7 @@
           },
           "configurations": {
             "redis": {
-              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:6379 && dotnet test",
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh redis -- dotnet test",
               "args": [
                 "--no-build",
                 "--no-restore",
@@ -42,7 +42,7 @@
               }
             },
             "postgres": {
-              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:5432 && dotnet test",
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh postgres -- dotnet test",
               "args": [
                 "--no-build",
                 "--no-restore",
@@ -66,7 +66,7 @@
               ]
             },
             "azurestorage": {
-              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh azurite 10000 10001 10002 -- dotnet test",
               "args": [
                 "--no-build",
                 "--no-restore",
@@ -80,7 +80,7 @@
               }
             },
             "nats": {
-              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:4222 && dotnet test",
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh nats -- dotnet test",
               "args": [
                 "--no-build",
                 "--no-restore",
@@ -101,7 +101,7 @@
               ]
             },
             "azurestorage-bvt": {
-              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh azurite 10000 10001 10002 -- dotnet test",
               "args": [
                 "--no-build",
                 "--no-restore",
@@ -125,7 +125,7 @@
               ]
             },
             "azurestorage-slowbvt": {
-              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh azurite 10000 10001 10002 -- dotnet test",
               "args": [
                 "--no-build",
                 "--no-restore",
@@ -149,7 +149,7 @@
               ]
             },
             "azurestorage-functional": {
-              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/with-service.sh azurite 10000 10001 10002 -- dotnet test",
               "args": [
                 "--no-build",
                 "--no-restore",
@@ -174,7 +174,7 @@
             {
               "workingDirectory": "absolute"
             },
-            "{workspaceRoot}/ci/services/wait-for.sh"
+            "{workspaceRoot}/ci/services/*.sh"
           ]
         },
         "build": {
