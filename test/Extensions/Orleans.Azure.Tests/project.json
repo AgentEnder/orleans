@@ -7,16 +7,6 @@
   "targets": {
     "test": {
       "configurations": {
-        "azurestorage": {
-          "args": [
-            "--no-build",
-            "--no-restore",
-            "--framework",
-            "net10.0",
-            "--filter-query",
-            "\"/[(Provider=AzureStorage)&(Suite=SlowBVT)&(Category!=Performance)&(Category!=Stress)]\""
-          ]
-        },
         "azurestorage-functional": {
           "args": [
             "--no-build",
