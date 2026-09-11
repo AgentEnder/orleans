@@ -174,9 +174,6 @@
             {
               "workingDirectory": "absolute"
             },
-            {
-              "dependentTasksOutputFiles": "**/bin/**/*"
-            },
             "{workspaceRoot}/ci/services/wait-for.sh"
           ]
         },
