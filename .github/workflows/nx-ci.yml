@@ -36,9 +36,12 @@ jobs:
 
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected.
       # Provider suites run as configurations of the inferred test target, scoped by project tag.
-      # All commands run in parallel against the same pipeline execution so the agents stay busy.
+      # The test commands run in parallel against the same pipeline execution so the agents stay busy.
+      # Build first so every test command below finds its dependencies in the cache
+      - run: ./nx affected -t build
+
       - run: |
-          ./nx affected -t build test &
+          ./nx affected -t test &
           ./nx run-many -t test -c redis -p tag:provider:redis &
           ./nx run-many -t test -c postgres -p tag:provider:postgres &
           ./nx run-many -t test -c sqlite -p tag:provider:sqlite &
