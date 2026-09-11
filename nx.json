@@ -109,5 +109,8 @@
   },
   "nxCloudUrl": "https://staging.nx.app",
   "nxCloudId": "6aa1d16cabcb6bfcf6298b42",
-  "defaultBase": "main"
+  "defaultBase": "main",
+  "tui": {
+    "enabled": false
+  }
 }
