@@ -24,5 +24,6 @@ launch-templates:
           mise-version: 'v2026.9.4'
       - name: Restore Solution
         script: dotnet restore Orleans.slnx
+      # Computes the project graph now, so the first task does not wait on MSBuild evaluation
       - name: Set up Nx
-        script: ./nx --version
+        script: ./nx show projects > /dev/null
