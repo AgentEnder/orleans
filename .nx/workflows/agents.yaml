@@ -27,3 +27,7 @@ launch-templates:
       # Computes the project graph now, so the first task does not wait on MSBuild evaluation
       - name: Set up Nx
         script: ./nx show projects > /dev/null
+      # Diagnostic: fingerprint the inferred configuration of a test project on each agent
+      - name: Config fingerprint
+        script: |
+          ./nx show project Orleans.Core.Tests --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const c=require("crypto").createHash("sha256").update(s).digest("hex");console.log("CONFIG-FINGERPRINT agent Orleans.Core.Tests "+c);console.log(s)})'
