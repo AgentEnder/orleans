@@ -204,7 +204,8 @@
               "workingDirectory": "absolute"
             }
           ]
-        }
+        },
+        "publish": false
       }
     }
   ],
