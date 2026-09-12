@@ -1,0 +1,15 @@
+{
+  "name": "svc-postgres",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "cache": false,
+      "options": {
+        "command": "bash ci/services/postgres/start.sh"
+      }
+    }
+  }
+}

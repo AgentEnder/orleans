@@ -1,20 +1,29 @@
 launch-templates:
   linux-large-dotnet-restored:
     resource-class: 'docker_linux_amd64/large'
-    image: 'ubuntu22.04-node20.19-v2'
+    image: 'ubuntu22.04-node24.14-v1'
+    env:
+      # Also installs the services in mise.ci.toml that the provider test targets start
+      MISE_ENV: ci
     init-steps:
       - name: Checkout
         uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/checkout/main.yaml'
-      # Installs the .NET SDK pinned in mise.toml
-      - name: Install Mise
-        uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/install-mise/main.yaml'
-      - name: Restore NuGet Package Cache
+      - name: Restore NuGet and Mise Caches
         uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/cache/main.yaml'
         inputs:
-          key: 'Directory.Packages.props|mise.toml'
-          paths: '~/.nuget/packages'
+          key: 'Directory.Packages.props|mise.toml|mise.ci.toml|.nx/workflows/agents.yaml'
+          paths: |
+            ~/.nuget/packages
+            ~/.local/share/mise/installs
           base-branch: 'main'
+      # Installs the .NET SDK pinned in mise.toml plus the mise.ci.toml services
+      - name: Install Mise
+        uses: 'nrwl/nx-cloud-workflows/v5/workflow-steps/install-mise/main.yaml'
+        inputs:
+          # the step's default (v2025.12.2) installs conda packages without their dependencies
+          mise-version: 'v2026.9.4'
       - name: Restore Solution
         script: dotnet restore Orleans.slnx
+      # Computes the project graph now, so the first task does not wait on MSBuild evaluation
       - name: Set up Nx
-        script: ./nx --version
+        script: ./nx show projects > /dev/null

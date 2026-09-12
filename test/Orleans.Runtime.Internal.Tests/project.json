@@ -1,0 +1,50 @@
+{
+  "name": "Orleans.Runtime.Internal.Tests",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "tags": [
+    "provider:azurestorage"
+  ],
+  "targets": {
+    "test": {
+      "configurations": {
+        "functional": {
+          "args": [
+            "--no-build",
+            "--no-restore",
+            "--framework",
+            "net10.0",
+            "--filter-query",
+            "\"//(!UnitTests.StorageTests)&(!UnitTests.General)&(!UnitTests.ActivationsLifeCycleTests)//[(Provider=None)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+          ]
+        },
+        "functional-1": {
+          "args": [
+            "--no-build",
+            "--no-restore",
+            "--framework",
+            "net10.0",
+            "--filter-query",
+            "\"//UnitTests.StorageTests//[(Provider=None)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+          ]
+        },
+        "functional-2": {
+          "args": [
+            "--no-build",
+            "--no-restore",
+            "--framework",
+            "net10.0",
+            "--filter-query",
+            "\"//(UnitTests.General)|(UnitTests.ActivationsLifeCycleTests)//[(Provider=None)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+          ]
+        }
+      },
+      "dependsOn": [
+        "build",
+        {
+          "projects": "svc-azurite",
+          "target": "serve"
+        }
+      ]
+    }
+  }
+}

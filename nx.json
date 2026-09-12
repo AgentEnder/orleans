@@ -25,22 +25,206 @@
               "--filter-query",
               "\"/[(Provider=None)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))]\""
             ]
-          }
-        }
+          },
+          "configurations": {
+            "redis": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:6379 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=Redis)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
+              ],
+              "env": {
+                "ORLEANSREDISCONNECTIONSTRING": "localhost:6379,ssl=False,abortConnect=False"
+              }
+            },
+            "postgres": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:5432 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=PostgreSql)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
+              ],
+              "env": {
+                "ORLEANSPOSTGRESCONNECTIONSTRING": "Server=127.0.0.1;Port=5432;Pooling=false;User Id=postgres;Password=postgres;SSL Mode=Disable"
+              }
+            },
+            "sqlite": {
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=Sqlite)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "azurestorage": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "env": {
+                "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+              },
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=AzureStorage)&(Suite=SlowBVT)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "nats": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:4222 && dotnet test",
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=NATS)&((Suite=BVT)|(Suite=SlowBVT)|(Suite=Functional))&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "bvt": {
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=None)&(Suite=BVT)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "azurestorage-bvt": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "env": {
+                "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+              },
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=AzureStorage)&(Suite=BVT)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "slowbvt": {
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=None)&(Suite=SlowBVT)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "functional": {
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=None)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "azurestorage-functional": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "env": {
+                "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+              },
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"/[(Provider=AzureStorage)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "azurestorage-functional-1": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "env": {
+                "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+              },
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"//NoSuchNamespace//[(Provider=AzureStorage)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            },
+            "azurestorage-functional-2": {
+              "command": "\"$NX_WORKSPACE_ROOT\"/ci/services/wait-for.sh 127.0.0.1:10000 127.0.0.1:10001 127.0.0.1:10002 && dotnet test",
+              "env": {
+                "ORLEANSDATACONNECTIONSTRING": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
+              },
+              "args": [
+                "--no-build",
+                "--no-restore",
+                "--framework",
+                "net10.0",
+                "--filter-query",
+                "\"//NoSuchNamespace//[(Provider=AzureStorage)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+              ]
+            }
+          },
+          "inputs": [
+            "default",
+            "^production",
+            "{workspaceRoot}/.editorconfig",
+            "{workspaceRoot}/global.json",
+            "{workspaceRoot}/**/Directory.Build.props",
+            "{workspaceRoot}/**/Directory.Build.targets",
+            "{workspaceRoot}/**/Directory.Packages.props",
+            {
+              "workingDirectory": "absolute"
+            },
+            "{workspaceRoot}/ci/services/wait-for.sh"
+          ]
+        },
+        "build": {
+          "inputs": [
+            "production",
+            "^production",
+            "{workspaceRoot}/.editorconfig",
+            "{workspaceRoot}/global.json",
+            "{workspaceRoot}/**/Directory.Build.props",
+            "{workspaceRoot}/**/Directory.Build.targets",
+            "{workspaceRoot}/**/Directory.Packages.props",
+            {
+              "workingDirectory": "absolute"
+            }
+          ]
+        },
+        "publish": false
       }
     }
   ],
   "namedInputs": {
     "default": [
-      "{projectRoot}/**/*"
+      "{projectRoot}/**/*",
+      "!{projectRoot}/**/bin/**/*",
+      "!{projectRoot}/**/obj/**/*",
+      "!{projectRoot}/**/TestResults/**/*"
     ],
     "production": [
       "default",
-      "!{projectRoot}/**/*.Tests/**/*",
-      "!{projectRoot}/**/bin/**/*",
-      "!{projectRoot}/**/obj/**/*"
+      "!{projectRoot}/**/*.Tests/**/*"
     ]
   },
   "nxCloudUrl": "https://staging.nx.app",
-  "nxCloudId": "6aa1d16cabcb6bfcf6298b42"
+  "nxCloudId": "6aa1d16cabcb6bfcf6298b42",
+  "defaultBase": "main",
+  "tui": {
+    "enabled": false
+  }
 }

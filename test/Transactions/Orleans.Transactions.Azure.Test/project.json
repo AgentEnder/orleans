@@ -1,0 +1,50 @@
+{
+  "name": "Orleans.Transactions.Azure.Test",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "tags": [
+    "provider:azurestorage"
+  ],
+  "targets": {
+    "test": {
+      "configurations": {
+        "azurestorage-functional": {
+          "args": [
+            "--no-build",
+            "--no-restore",
+            "--framework",
+            "net10.0",
+            "--filter-query",
+            "\"//(!Orleans.Transactions.Azure.Tests)&(!Orleans.Transactions.Azure.Tests.FaultInjection.ControlledInjection)/(!SkewedClockGoldenPathTransactionTests)&(!GoldenPathTests)/[(Provider=AzureStorage)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+          ]
+        },
+        "azurestorage-functional-1": {
+          "args": [
+            "--no-build",
+            "--no-restore",
+            "--framework",
+            "net10.0",
+            "--filter-query",
+            "\"///(SkewedClockGoldenPathTransactionTests)|(GoldenPathTests)/[(Provider=AzureStorage)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+          ]
+        },
+        "azurestorage-functional-2": {
+          "args": [
+            "--no-build",
+            "--no-restore",
+            "--framework",
+            "net10.0",
+            "--filter-query",
+            "\"//Orleans.Transactions.Azure.Tests*//[(Provider=AzureStorage)&(Suite=Functional)&(Category!=Performance)&(Category!=Stress)]\""
+          ]
+        }
+      },
+      "dependsOn": [
+        "build",
+        {
+          "projects": "svc-azurite",
+          "target": "serve"
+        }
+      ]
+    }
+  }
+}
